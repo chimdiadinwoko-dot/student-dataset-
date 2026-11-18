@@ -1,0 +1,74 @@
+"""
+Fictional Student Dataset Generator
+-----------------------------------
+Name:        Nwoko Sullivan
+Matric No:   24/14002
+
+Generates a fictional dataset of students with:
+    1. Student ID
+    2. Department
+    3. Level
+    4. Attendance Percentage
+    5. Average Examination Score
+
+Uses only Python's standard library (no installs needed).
+Run:  python generate_dataset.py
+"""
+
+import csv
+import random
+
+# ---------- Settings ----------
+NUM_STUDENTS = 200
+OUTPUT_FILE = "student_dataset.csv"
+SEED = 42  # fixed seed so the dataset is reproducible
+
+DEPARTMENTS = [
+    "Cybersecurity",
+    "Computer Science",
+    "Software Engineering",
+    "Information Technology",
+    "Data Science",
+]
+LEVELS = [100, 200, 300, 400]
+
+
+def generate_student(index: int) -> dict:
+    """Create one fictional student record."""
+    student_id = f"STU{index:04d}"
+    department = random.choice(DEPARTMENTS)
+    level = random.choice(LEVELS)
+
+    # Attendance: most students attend well, a few attend poorly
+    attendance = round(min(100, max(40, random.gauss(78, 12))), 1)
+
+    # Exam score: loosely tied to attendance, plus random variation
+    score = attendance * 0.6 + random.gauss(25, 10)
+    avg_score = round(min(100, max(20, score)), 1)
+
+    return {
+        "Student ID": student_id,
+        "Department": department,
+        "Level": level,
+        "Attendance Percentage": attendance,
+        "Average Examination Score": avg_score,
+    }
+
+
+def main() -> None:
+    random.seed(SEED)
+    students = [generate_student(i) for i in range(1, NUM_STUDENTS + 1)]
+
+    with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(students[0].keys()))
+        writer.writeheader()
+        writer.writerows(students)
+
+    print(f"Dataset created: {OUTPUT_FILE} ({len(students)} students)")
+    print("\nPreview (first 5 rows):")
+    for row in students[:5]:
+        print(row)
+
+
+if __name__ == "__main__":
+    main()
